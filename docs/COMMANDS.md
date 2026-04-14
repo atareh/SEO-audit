@@ -21,10 +21,13 @@ Full website SEO audit with parallel analysis.
 3. Delegates to 7 specialist subagents in parallel
 4. Generates SEO Health Score (0-100)
 5. Creates prioritized action plan
+6. Publishes the audit to `myseoaudit.xyz` by default and returns the hosted report link
 
 **Output:**
+- Hosted report link on `myseoaudit.xyz`
 - `FULL-AUDIT-REPORT.md`
 - `ACTION-PLAN.md`
+- `hosted-audit-report.json`
 - `screenshots/` (if Playwright available)
 
 ---
@@ -349,7 +352,7 @@ AI image generation for SEO assets (extension). Powered by Gemini via nanobanana
 
 | Command | Use Case |
 |---------|----------|
-| `/seo audit <url>` | Full website audit |
+| `/seo audit <url>` | Full website audit with hosted report output |
 | `/seo competitor-pages [url\|generate]` | Competitor comparison pages |
 | `/seo content <url>` | E-E-A-T analysis |
 | `/seo geo <url>` | AI search optimization |

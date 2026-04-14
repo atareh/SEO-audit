@@ -1,0 +1,189 @@
+{
+  "schema_version": "hosted-audit-report/v1",
+  "report_type": "full_audit",
+  "report_id": "audit_demo_20260414_example_com",
+  "generated_at": "2026-04-14T18:30:00Z",
+  "target": {
+    "domain": "example.com",
+    "url": "https://example.com"
+  },
+  "source": {
+    "generator": "claude-seo",
+    "artifacts_present": [
+      "google-data",
+      "full-audit-report",
+      "action-plan"
+    ]
+  },
+  "overview": {
+    "health_score": 78,
+    "lighthouse_performance_score": 71,
+    "lighthouse_seo_score": 92,
+    "total_clicks": 18420,
+    "total_impressions": 241000,
+    "indexed_urls": 87,
+    "inspected_urls": 93,
+    "critical_issue_count": 3,
+    "quick_win_count": 4
+  },
+  "highlights": {
+    "critical_issues": [
+      {
+        "title": "Render-blocking resources",
+        "detail": "Largest Contentful Paint is slowed by CSS and JavaScript loaded before above-the-fold content.",
+        "source": "google-data.performance",
+        "severity": "critical"
+      },
+      {
+        "title": "6 URLs are not indexed",
+        "detail": "Google URL Inspection returned FAIL for 6 inspected URLs.",
+        "source": "google-data.indexation",
+        "severity": "high"
+      }
+    ],
+    "quick_wins": [
+      {
+        "title": "12 quick-win queries",
+        "detail": "Queries ranking in positions 4-10 have enough impressions to justify focused page updates.",
+        "source": "google-data.search-console",
+        "severity": "medium",
+        "effort": "2-4 hrs"
+      }
+    ]
+  },
+  "sections": {
+    "performance": {
+      "available": true,
+      "lighthouse_scores": {
+        "performance": 71,
+        "accessibility": 95,
+        "best-practices": 89,
+        "seo": 92
+      },
+      "core_web_vitals": {
+        "largest_contentful_paint": {
+          "label": "LCP",
+          "value": 3200,
+          "unit": "ms",
+          "rating": "needs_improvement",
+          "good_threshold": 2500,
+          "poor_threshold": 4000,
+          "distribution": {
+            "good": 46,
+            "needs_improvement": 31,
+            "poor": 23
+          }
+        },
+        "interaction_to_next_paint": {
+          "label": "INP",
+          "value": 180,
+          "unit": "ms",
+          "rating": "good",
+          "good_threshold": 200,
+          "poor_threshold": 500
+        },
+        "cumulative_layout_shift": {
+          "label": "CLS",
+          "value": 0.12,
+          "unit": "",
+          "rating": "needs_improvement",
+          "good_threshold": 0.1,
+          "poor_threshold": 0.25
+        }
+      },
+      "opportunities": [
+        {
+          "title": "Eliminate render-blocking resources",
+          "savings_ms": 860
+        }
+      ],
+      "failed_audits": [
+        {
+          "title": "Largest Contentful Paint element",
+          "score": 0.21
+        }
+      ],
+      "history": {
+        "weeks": 25
+      }
+    },
+    "search_console": {
+      "available": true,
+      "totals": {
+        "clicks": 18420,
+        "impressions": 241000,
+        "ctr": 0.076,
+        "position": 9.4
+      },
+      "top_queries": [
+        {
+          "query": "example seo tool",
+          "clicks": 410,
+          "impressions": 5800,
+          "ctr": 0.071,
+          "position": 5.2
+        }
+      ],
+      "top_pages": [],
+      "quick_wins": [
+        {
+          "query": "example seo tool",
+          "clicks": 410,
+          "impressions": 5800,
+          "position": 5.2
+        }
+      ]
+    },
+    "indexation": {
+      "available": true,
+      "summary": {
+        "pass": 87,
+        "fail": 6,
+        "neutral": 0,
+        "error": 0
+      },
+      "total": 93,
+      "results": [
+        {
+          "url": "https://example.com/page-a",
+          "verdict": "PASS"
+        },
+        {
+          "url": "https://example.com/page-b",
+          "verdict": "FAIL"
+        }
+      ]
+    },
+    "audit_report": {
+      "available": true,
+      "markdown": "# Executive Summary\n\nExample markdown preserved for hosted rendering.",
+      "headings": [
+        {
+          "level": 1,
+          "title": "Executive Summary",
+          "content": "Example markdown preserved for hosted rendering."
+        }
+      ]
+    },
+    "action_plan": {
+      "available": true,
+      "markdown": "## Critical fixes\n- Reduce render-blocking resources\n- Fix noindex on key landing pages",
+      "headings": [
+        {
+          "level": 2,
+          "title": "Critical fixes",
+          "content": "- Reduce render-blocking resources\n- Fix noindex on key landing pages"
+        }
+      ],
+      "priorities": [
+        {
+          "priority": "critical",
+          "items": [
+            "Reduce render-blocking resources",
+            "Fix noindex on key landing pages"
+          ]
+        }
+      ]
+    }
+  }
+}

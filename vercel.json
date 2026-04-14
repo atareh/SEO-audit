@@ -1,0 +1,17 @@
+{
+  "buildCommand": "npm run build:webapp",
+  "rewrites": [
+    {
+      "source": "/reports/(.*)",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/claim",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/api/reports/(.*)",
+      "destination": "/api/reports?reportId=$1"
+    }
+  ]
+}

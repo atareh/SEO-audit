@@ -117,3 +117,11 @@ scripts/generate_setup_guide.py
 
 # Generated site builds
 site/
+
+# Local hosted report app state
+webapp/.data/
+
+# Built webapp output
+public/
+.vercel
+.env*.local

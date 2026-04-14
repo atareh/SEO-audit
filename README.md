@@ -100,6 +100,9 @@ claude
 # Optimize for AI search
 /seo geo https://example.com
 ```
+
+`/seo audit` now publishes a hosted report by default, so the normal handoff is a report link plus local backup files.
+
 ### Demo:
 [Watch the full demo on YouTube](https://www.youtube.com/watch?v=COMnNlUakQk)
 
@@ -111,7 +114,7 @@ claude
 
 | Command | Description |
 |---------|-------------|
-| `/seo audit <url>` | Full website audit with parallel subagent delegation |
+| `/seo audit <url>` | Full website audit with parallel subagent delegation and hosted report delivery |
 | `/seo page <url>` | Deep single-page analysis |
 | `/seo sitemap <url>` | Analyze existing XML sitemap |
 | `/seo sitemap generate` | Generate new sitemap with industry templates |
@@ -365,6 +368,8 @@ Claude SEO is part of a family of Claude Code skills that work together:
 - [Installation Guide](docs/INSTALLATION.md)
 - [Commands Reference](docs/COMMANDS.md)
 - [Architecture](docs/ARCHITECTURE.md)
+- [Hosted Reports](docs/HOSTED-REPORTS.md)
+- [Hosted Report App](webapp/README.md)
 - [MCP Integration](docs/MCP-INTEGRATION.md)
 - [Troubleshooting](docs/TROUBLESHOOTING.md)
 

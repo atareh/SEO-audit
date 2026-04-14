@@ -1,0 +1,15 @@
+{
+  "name": "seo-audit-app",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build:webapp": "node scripts/build_webapp.mjs"
+  },
+  "dependencies": {
+    "@vercel/analytics": "^1.5.0",
+    "@vercel/blob": "^2.3.3"
+  },
+  "devDependencies": {
+    "esbuild": "^0.25.5"
+  }
+}

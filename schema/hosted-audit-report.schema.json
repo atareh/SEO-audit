@@ -1,0 +1,442 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/schemas/hosted-audit-report.schema.json",
+  "title": "Hosted Audit Report",
+  "description": "Canonical payload for rendering Claude SEO audit results in a hosted web UI.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "report_type",
+    "generated_at",
+    "target",
+    "overview",
+    "highlights",
+    "sections"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "hosted-audit-report/v1"
+    },
+    "report_type": {
+      "type": "string",
+      "enum": [
+        "full_audit"
+      ]
+    },
+    "report_id": {
+      "type": "string"
+    },
+    "generated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "target": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "domain"
+      ],
+      "properties": {
+        "domain": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        }
+      }
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "generator": {
+          "type": "string"
+        },
+        "artifacts_present": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "overview": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "health_score",
+        "critical_issue_count",
+        "quick_win_count"
+      ],
+      "properties": {
+        "health_score": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "lighthouse_performance_score": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "lighthouse_seo_score": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "total_clicks": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "total_impressions": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "indexed_urls": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "inspected_urls": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "critical_issue_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "quick_win_count": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "highlights": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "critical_issues",
+        "quick_wins"
+      ],
+      "properties": {
+        "critical_issues": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/highlight"
+          }
+        },
+        "quick_wins": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/highlight"
+          }
+        }
+      }
+    },
+    "sections": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "performance",
+        "search_console",
+        "indexation",
+        "audit_report",
+        "action_plan"
+      ],
+      "properties": {
+        "performance": {
+          "$ref": "#/$defs/performanceSection"
+        },
+        "search_console": {
+          "$ref": "#/$defs/searchConsoleSection"
+        },
+        "indexation": {
+          "$ref": "#/$defs/indexationSection"
+        },
+        "audit_report": {
+          "$ref": "#/$defs/markdownSection"
+        },
+        "action_plan": {
+          "$ref": "#/$defs/actionPlanSection"
+        }
+      }
+    }
+  },
+  "$defs": {
+    "highlight": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "title",
+        "detail",
+        "source"
+      ],
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "detail": {
+          "type": "string"
+        },
+        "source": {
+          "type": "string"
+        },
+        "severity": {
+          "type": "string",
+          "enum": [
+            "critical",
+            "high",
+            "medium",
+            "low"
+          ]
+        },
+        "effort": {
+          "type": "string"
+        },
+        "value": {}
+      }
+    },
+    "metric": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "label": {
+          "type": "string"
+        },
+        "value": {},
+        "unit": {
+          "type": "string"
+        },
+        "rating": {
+          "type": "string"
+        },
+        "good_threshold": {},
+        "poor_threshold": {},
+        "distribution": {
+          "type": "object",
+          "additionalProperties": true
+        }
+      }
+    },
+    "markdownHeading": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "level",
+        "title",
+        "content"
+      ],
+      "properties": {
+        "level": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 6
+        },
+        "title": {
+          "type": "string"
+        },
+        "content": {
+          "type": "string"
+        }
+      }
+    },
+    "performanceSection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "available"
+      ],
+      "properties": {
+        "available": {
+          "type": "boolean"
+        },
+        "lighthouse_scores": {
+          "type": "object",
+          "additionalProperties": {
+            "type": [
+              "number",
+              "integer"
+            ]
+          }
+        },
+        "core_web_vitals": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/metric"
+          }
+        },
+        "opportunities": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        },
+        "failed_audits": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        },
+        "history": {
+          "type": "object",
+          "additionalProperties": true
+        }
+      }
+    },
+    "searchConsoleSection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "available"
+      ],
+      "properties": {
+        "available": {
+          "type": "boolean"
+        },
+        "totals": {
+          "type": "object",
+          "additionalProperties": true
+        },
+        "top_queries": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        },
+        "top_pages": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        },
+        "quick_wins": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        }
+      }
+    },
+    "indexationSection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "available"
+      ],
+      "properties": {
+        "available": {
+          "type": "boolean"
+        },
+        "summary": {
+          "type": "object",
+          "additionalProperties": true
+        },
+        "total": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "results": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        }
+      }
+    },
+    "markdownSection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "available",
+        "markdown",
+        "headings"
+      ],
+      "properties": {
+        "available": {
+          "type": "boolean"
+        },
+        "markdown": {
+          "type": "string"
+        },
+        "headings": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/markdownHeading"
+          }
+        }
+      }
+    },
+    "actionPlanSection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "available",
+        "markdown",
+        "headings",
+        "priorities"
+      ],
+      "properties": {
+        "available": {
+          "type": "boolean"
+        },
+        "markdown": {
+          "type": "string"
+        },
+        "headings": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/markdownHeading"
+          }
+        },
+        "priorities": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "priority",
+              "items"
+            ],
+            "properties": {
+              "priority": {
+                "type": "string",
+                "enum": [
+                  "critical",
+                  "high",
+                  "medium",
+                  "low"
+                ]
+              },
+              "items": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
