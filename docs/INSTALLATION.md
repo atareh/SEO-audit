@@ -14,14 +14,16 @@ Optional:
 ### Unix/macOS/Linux
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/AgriciDaniel/claude-seo/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/atareh/SEO-audit/main/install.sh | bash
 ```
+
+This is the hosted-report edition. It installs the fork that publishes audit dashboards to `myseoaudit.xyz` by default.
 
 ### Windows (PowerShell)
 
 ```powershell
-git clone --depth 1 https://github.com/AgriciDaniel/claude-seo.git
-cd claude-seo
+git clone --depth 1 https://github.com/atareh/SEO-audit.git
+cd SEO-audit
 powershell -ExecutionPolicy Bypass -File install.ps1
 ```
 
@@ -30,8 +32,8 @@ powershell -ExecutionPolicy Bypass -File install.ps1
 1. **Clone the repository**
 
 ```bash
-git clone https://github.com/AgriciDaniel/claude-seo.git
-cd claude-seo
+git clone https://github.com/atareh/SEO-audit.git
+cd SEO-audit
 ```
 
 2. **Run the installer**
@@ -90,7 +92,7 @@ You should see a help message or prompt for a URL.
 ## Uninstallation
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/AgriciDaniel/claude-seo/main/uninstall.sh | bash
+curl -fsSL https://raw.githubusercontent.com/atareh/SEO-audit/main/uninstall.sh | bash
 ```
 
 Or manually:
@@ -124,10 +126,10 @@ To upgrade to the latest version:
 
 ```bash
 # Uninstall current version
-curl -fsSL https://raw.githubusercontent.com/AgriciDaniel/claude-seo/main/uninstall.sh | bash
+curl -fsSL https://raw.githubusercontent.com/atareh/SEO-audit/main/uninstall.sh | bash
 
 # Install new version
-curl -fsSL https://raw.githubusercontent.com/AgriciDaniel/claude-seo/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/atareh/SEO-audit/main/install.sh | bash
 ```
 
 ## Troubleshooting

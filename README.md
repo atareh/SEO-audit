@@ -2,9 +2,11 @@
 
 ![Claude SEO](screenshots/cover-image.jpeg)
 
-# Claude SEO - SEO Audit Skill for Claude Code
+# SEO Audit - Hosted Report Skill for Claude Code
 
 Comprehensive SEO analysis skill for Claude Code. Covers technical SEO, on-page analysis, content quality (E-E-A-T), schema markup, image optimization, sitemap architecture, AI search optimization (GEO), local SEO, maps intelligence, Google SEO APIs (Search Console, PageSpeed, CrUX, GA4), PDF report generation, and strategic planning.
+
+This fork is the hosted-report edition. `/seo audit` writes the local markdown artifacts and then publishes a client-facing dashboard on [myseoaudit.xyz](https://www.myseoaudit.xyz) by default.
 
 ![SEO Command Demo](screenshots/seo-command-demo.gif)
 
@@ -29,40 +31,28 @@ Comprehensive SEO analysis skill for Claude Code. Covers technical SEO, on-page 
 
 ## Installation
 
-### Plugin Install (Claude Code 1.0.33+)
+### Hosted Report Edition (Recommended)
 
 ```bash
-# Add marketplace (one-time)
-/plugin marketplace add AgriciDaniel/claude-seo
-
-# Install plugin
-/plugin install claude-seo@AgriciDaniel-claude-seo
+git clone --depth 1 https://github.com/atareh/SEO-audit.git
+bash SEO-audit/install.sh
 ```
 
-### Manual Install (Unix/macOS/Linux)
+There is not a separate `npx` installer for this hosted-report build. Install it directly from this GitHub repo so you get the `myseoaudit.xyz` publishing flow.
 
-```bash
-git clone --depth 1 https://github.com/AgriciDaniel/claude-seo.git
-bash claude-seo/install.sh
-```
+> Do not use the upstream `AgriciDaniel/claude-seo` marketplace package if you want the hosted report link. That path installs the upstream build, not this hosted-report fork.
 
 <details>
 <summary>One-liner (curl)</summary>
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/AgriciDaniel/claude-seo/main/install.sh | bash
-```
-
-Or via [install.cat](https://install.cat):
-
-```bash
-curl -fsSL install.cat/AgriciDaniel/claude-seo | bash
+curl -fsSL https://raw.githubusercontent.com/atareh/SEO-audit/main/install.sh | bash
 ```
 
 Prefer to review the script before running?
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/AgriciDaniel/claude-seo/main/install.sh > install.sh
+curl -fsSL https://raw.githubusercontent.com/atareh/SEO-audit/main/install.sh > install.sh
 cat install.sh        # review
 bash install.sh       # run when satisfied
 rm install.sh
@@ -73,11 +63,11 @@ rm install.sh
 ### Windows (PowerShell)
 
 ```powershell
-git clone --depth 1 https://github.com/AgriciDaniel/claude-seo.git
-powershell -ExecutionPolicy Bypass -File claude-seo\install.ps1
+git clone --depth 1 https://github.com/atareh/SEO-audit.git
+powershell -ExecutionPolicy Bypass -File SEO-audit\install.ps1
 ```
 
-> **Why git clone instead of `irm | iex`?** Claude Code's own security guardrails flag `irm ... | iex` as a supply chain risk (downloading and executing remote code with no verification). The git clone approach lets you inspect the script at `claude-seo\install.ps1` before running it.
+> **Why git clone instead of `irm | iex`?** Claude Code's own security guardrails flag `irm ... | iex` as a supply chain risk (downloading and executing remote code with no verification). The git clone approach lets you inspect the script at `SEO-audit\install.ps1` before running it.
 
 ## Quick Start
 

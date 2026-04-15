@@ -7,10 +7,11 @@ set -euo pipefail
 main() {
     SKILL_DIR="${HOME}/.claude/skills/seo"
     AGENT_DIR="${HOME}/.claude/agents"
-    REPO_URL="https://github.com/AgriciDaniel/claude-seo"
-    # Pin to a specific release tag to prevent silent updates from main.
-    # Override: CLAUDE_SEO_TAG=main bash install.sh
-    REPO_TAG="${CLAUDE_SEO_TAG:-v1.8.2}"
+    REPO_URL="${CLAUDE_SEO_REPO_URL:-https://github.com/atareh/SEO-audit}"
+    RAW_REPO_URL="${CLAUDE_SEO_RAW_REPO_URL:-https://raw.githubusercontent.com/atareh/SEO-audit/main}"
+    # Default to the hosted-report build on main.
+    # Override: CLAUDE_SEO_TAG=v1.8.2 bash install.sh
+    REPO_TAG="${CLAUDE_SEO_TAG:-main}"
 
     echo "════════════════════════════════════════"
     echo "║   Claude SEO - Installer             ║"
@@ -152,7 +153,7 @@ main() {
     echo "  2. Run commands:       /seo audit https://example.com"
     echo ""
     echo "Python deps location: ${SKILL_DIR}/requirements.txt"
-    echo "To uninstall: curl -fsSL ${REPO_URL}/raw/main/uninstall.sh | bash"
+    echo "To uninstall: curl -fsSL ${RAW_REPO_URL}/uninstall.sh | bash"
 }
 
 main "$@"

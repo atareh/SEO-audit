@@ -84,10 +84,10 @@ try {
 # Set paths
 $SkillDir = "$env:USERPROFILE\.claude\skills\seo"
 $AgentDir = "$env:USERPROFILE\.claude\agents"
-$RepoUrl = "https://github.com/AgriciDaniel/claude-seo"
-# Pin to a specific release tag to prevent silent updates from main.
-# Override: $env:CLAUDE_SEO_TAG = 'main'; .\install.ps1
-$RepoTag = if ($env:CLAUDE_SEO_TAG) { $env:CLAUDE_SEO_TAG } else { 'v1.8.2' }
+$RepoUrl = if ($env:CLAUDE_SEO_REPO_URL) { $env:CLAUDE_SEO_REPO_URL } else { "https://github.com/atareh/SEO-audit" }
+# Default to the hosted-report build on main.
+# Override: $env:CLAUDE_SEO_TAG = 'v1.8.2'; .\install.ps1
+$RepoTag = if ($env:CLAUDE_SEO_TAG) { $env:CLAUDE_SEO_TAG } else { 'main' }
 
 # Create directories
 New-Item -ItemType Directory -Force -Path $SkillDir | Out-Null
