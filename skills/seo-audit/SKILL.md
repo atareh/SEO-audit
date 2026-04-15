@@ -46,7 +46,7 @@ Delay between requests: 1 second
 
 ## Default Outcome
 
-`/seo audit` should end by giving the user a hosted report link on `myseoaudit.xyz`.
+`/seo-audit` should end by giving the user a hosted report link on `myseoaudit.xyz`.
 
 Local files still matter as backups and intermediate artifacts, but they are no longer the main handoff.
 

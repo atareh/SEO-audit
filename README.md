@@ -6,7 +6,7 @@
 
 Comprehensive SEO analysis skill for Claude Code. Covers technical SEO, on-page analysis, content quality (E-E-A-T), schema markup, image optimization, sitemap architecture, AI search optimization (GEO), local SEO, maps intelligence, Google SEO APIs (Search Console, PageSpeed, CrUX, GA4), PDF report generation, and strategic planning.
 
-This fork is the hosted-report edition. `/seo audit` writes the local markdown artifacts and then publishes a client-facing dashboard on [myseoaudit.xyz](https://www.myseoaudit.xyz) by default.
+This fork is the hosted-report edition. `/seo-audit` writes the local markdown artifacts and then publishes a client-facing dashboard on [myseoaudit.xyz](https://www.myseoaudit.xyz) by default.
 
 ![SEO Command Demo](screenshots/seo-command-demo.gif)
 
@@ -76,7 +76,7 @@ powershell -ExecutionPolicy Bypass -File SEO-audit\install.ps1
 claude
 
 # Run a full site audit
-/seo audit https://example.com
+/seo-audit https://example.com
 
 # Analyze a single page
 /seo page https://example.com/about
@@ -91,12 +91,12 @@ claude
 /seo geo https://example.com
 ```
 
-`/seo audit` now publishes a hosted report by default, so the normal handoff is a report link plus local backup files.
+`/seo-audit` now publishes a hosted report by default, so the normal handoff is a report link plus local backup files.
 
 ### Demo:
 [Watch the full demo on YouTube](https://www.youtube.com/watch?v=COMnNlUakQk)
 
-**`/seo audit`: full site audit with parallel subagents:**
+**`/seo-audit`: full site audit with parallel subagents:**
 
 ![SEO Audit Demo](screenshots/seo-audit-demo.gif)
 
@@ -104,7 +104,7 @@ claude
 
 | Command | Description |
 |---------|-------------|
-| `/seo audit <url>` | Full website audit with parallel subagent delegation and hosted report delivery |
+| `/seo-audit <url>` | Full website audit with parallel subagent delegation and hosted report delivery |
 | `/seo page <url>` | Deep single-page analysis |
 | `/seo sitemap <url>` | Analyze existing XML sitemap |
 | `/seo sitemap generate` | Generate new sitemap with industry templates |
@@ -347,7 +347,7 @@ Claude SEO is part of a family of Claude Code skills that work together:
 | [AI Marketing Claude](https://github.com/zubair-trabzada/ai-marketing-claude) | Copywriting, emails, social, ads, funnels, CRO | Community -- post-audit marketing action from SEO findings |
 
 **Workflow example:**
-1. `/seo audit https://example.com` -- identify content gaps and technical issues
+1. `/seo-audit https://example.com` -- identify content gaps and technical issues
 2. `/seo backlinks https://example.com` -- analyze link profile and competitor gaps
 3. `/blog write "target keyword"` -- create SEO-optimized blog posts
 4. `/seo image-gen hero "blog topic"` -- generate hero images (banana extension)

@@ -6,13 +6,13 @@ All Claude SEO commands start with `/seo` followed by a subcommand.
 
 ## Command List
 
-### `/seo audit <url>`
+### `/seo-audit <url>`
 
 Full website SEO audit with parallel analysis.
 
 **Example:**
 ```
-/seo audit https://example.com
+/seo-audit https://example.com
 ```
 
 **What it does:**
@@ -352,7 +352,7 @@ AI image generation for SEO assets (extension). Powered by Gemini via nanobanana
 
 | Command | Use Case |
 |---------|----------|
-| `/seo audit <url>` | Full website audit with hosted report output |
+| `/seo-audit <url>` | Full website audit with hosted report output |
 | `/seo competitor-pages [url\|generate]` | Competitor comparison pages |
 | `/seo content <url>` | E-E-A-T analysis |
 | `/seo geo <url>` | AI search optimization |
