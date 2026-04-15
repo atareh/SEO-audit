@@ -942,6 +942,580 @@ textarea {
   }
 }
 
+:root {
+  --bg: #f2eee6;
+  --panel: rgba(255, 252, 248, 0.92);
+  --panel-strong: #fffdfa;
+  --ink: #12202a;
+  --muted: #5d6c75;
+  --line: rgba(18, 32, 42, 0.11);
+  --accent: #bb7743;
+  --accent-soft: rgba(187, 119, 67, 0.12);
+  --success: #1f6451;
+  --warning: #9b6a24;
+  --alert: #a7442a;
+  --shadow: 0 24px 70px rgba(14, 22, 30, 0.09);
+}
+
+html {
+  background:
+    radial-gradient(circle at top left, rgba(187, 119, 67, 0.16), transparent 30%),
+    radial-gradient(circle at 82% 12%, rgba(31, 100, 81, 0.12), transparent 26%),
+    linear-gradient(180deg, #f6f1e9 0%, #ece5da 100%);
+}
+
+body {
+  font-family: "Public Sans", "Avenir Next", sans-serif;
+  color: var(--ink);
+}
+
+.brand-copy strong,
+.eyebrow,
+.mini-section-kicker,
+.stat-chip span,
+.snapshot-card span,
+.score-badge span,
+.score-badge small,
+.hero-facts span,
+.agent-brief-box span,
+.usage-steps span {
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+.hero h1,
+.report-headline,
+.section-heading h2,
+.rail-card h3,
+.client-scorecard h3,
+.claim-card h1,
+.empty-state h1,
+.query-table h3 {
+  font-family: "Sora", "Avenir Next", sans-serif;
+}
+
+.serif {
+  font-family: "Baskervville", Georgia, serif;
+}
+
+.topbar {
+  padding-bottom: 28px;
+}
+
+.brand-mark {
+  background: linear-gradient(155deg, #13212b, #2d3e4d);
+}
+
+.brand-copy strong {
+  font-family: "Sora", "Avenir Next", sans-serif;
+  font-size: 0.9rem;
+}
+
+.button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.client-hero {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(320px, 0.8fr);
+  gap: 28px;
+  padding: 36px;
+  border-radius: 34px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background:
+    radial-gradient(circle at top right, rgba(187, 119, 67, 0.22), transparent 28%),
+    linear-gradient(160deg, #162630 0%, #223543 46%, #1a2a34 100%);
+  color: #eef4f7;
+  box-shadow: 0 34px 90px rgba(10, 18, 24, 0.22);
+  overflow: hidden;
+}
+
+.client-hero::after {
+  content: "";
+  position: absolute;
+  inset: auto auto -80px -40px;
+  width: 320px;
+  height: 320px;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(31, 100, 81, 0.18), transparent 70%);
+  pointer-events: none;
+}
+
+.client-hero .eyebrow {
+  color: rgba(237, 244, 247, 0.82);
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.client-hero .report-headline {
+  max-width: 10ch;
+  margin-top: 18px;
+  color: #f8fbfd;
+}
+
+.client-hero .report-subhead {
+  max-width: 62ch;
+  color: rgba(234, 241, 244, 0.78);
+}
+
+.client-hero .button-secondary {
+  color: #eef4f7;
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+.client-scorecard {
+  display: grid;
+  gap: 18px;
+  padding: 22px;
+  border-radius: 28px;
+  background: rgba(245, 248, 250, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+}
+
+.score-badge-wrap {
+  display: grid;
+  gap: 18px;
+}
+
+.score-badge {
+  display: grid;
+  gap: 8px;
+  padding: 22px;
+  border-radius: 24px;
+  background: rgba(10, 16, 20, 0.24);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.score-badge strong {
+  font-family: "Sora", "Avenir Next", sans-serif;
+  font-size: clamp(3.2rem, 8vw, 4.8rem);
+  line-height: 0.9;
+  letter-spacing: -0.06em;
+}
+
+.score-badge small {
+  color: rgba(234, 241, 244, 0.72);
+  font-size: 0.75rem;
+}
+
+.score-projection {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+}
+
+.score-projection div,
+.hero-facts div {
+  display: grid;
+  gap: 6px;
+  padding: 16px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.score-projection span,
+.hero-facts span {
+  color: rgba(234, 241, 244, 0.65);
+  font-size: 0.72rem;
+}
+
+.score-projection strong,
+.hero-facts strong {
+  font-size: 1rem;
+  color: #f9fbfd;
+}
+
+.hero-facts {
+  display: grid;
+  gap: 12px;
+}
+
+.dashboard-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.45fr) minmax(300px, 0.72fr);
+  gap: 24px;
+  margin-top: 28px;
+  align-items: start;
+}
+
+.dashboard-main {
+  display: grid;
+  gap: 22px;
+}
+
+.dashboard-rail {
+  position: sticky;
+  top: 24px;
+  display: grid;
+  gap: 18px;
+}
+
+.report-section {
+  padding: 28px;
+  border-radius: 28px;
+  background: linear-gradient(180deg, rgba(255, 252, 248, 0.96), rgba(252, 249, 244, 0.88));
+}
+
+.section-heading {
+  align-items: end;
+}
+
+.section-heading p {
+  max-width: 66ch;
+  color: var(--muted);
+}
+
+.stat-ribbon {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 14px;
+}
+
+.stat-chip {
+  display: grid;
+  gap: 8px;
+  padding: 18px;
+  border-radius: 22px;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.68);
+}
+
+.stat-chip strong {
+  font-family: "Sora", "Avenir Next", sans-serif;
+  font-size: 1.15rem;
+  letter-spacing: -0.03em;
+}
+
+.stat-chip-good {
+  background: color-mix(in oklab, white 84%, var(--success) 16%);
+}
+
+.stat-chip-warn {
+  background: color-mix(in oklab, white 82%, var(--warning) 18%);
+}
+
+.stat-chip-alert {
+  background: color-mix(in oklab, white 84%, var(--alert) 16%);
+}
+
+.category-list,
+.bullet-card-grid,
+.strength-grid,
+.improvement-grid,
+.sprint-grid,
+.snapshot-grid {
+  display: grid;
+  gap: 14px;
+}
+
+.category-list {
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+}
+
+.category-card,
+.bullet-card,
+.strength-card,
+.improvement-card,
+.sprint-card,
+.snapshot-card,
+.priority-card {
+  border-radius: 22px;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.category-card {
+  padding: 18px;
+  display: grid;
+  gap: 14px;
+}
+
+.category-head {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.category-head h3 {
+  margin: 0;
+  font-family: "Sora", "Avenir Next", sans-serif;
+  font-size: 1rem;
+  letter-spacing: -0.02em;
+}
+
+.category-head p,
+.category-foot span {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.category-score {
+  min-width: 62px;
+  padding: 10px 12px;
+  border-radius: 999px;
+  text-align: center;
+  font-weight: 700;
+}
+
+.category-track {
+  height: 10px;
+  border-radius: 999px;
+  background: rgba(18, 32, 42, 0.08);
+  overflow: hidden;
+}
+
+.category-track span {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--accent), color-mix(in oklab, var(--accent) 55%, white));
+}
+
+.category-foot {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 0.92rem;
+}
+
+.category-foot strong {
+  color: var(--ink);
+}
+
+.dual-panel-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.mini-section-kicker {
+  margin-bottom: 12px;
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.bullet-card {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 12px;
+  align-items: start;
+  padding: 16px;
+}
+
+.bullet-card p,
+.strength-card p,
+.improvement-card p,
+.sprint-card p,
+.priority-card p,
+.agent-brief-box p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.65;
+}
+
+.bullet-card-warm {
+  background: color-mix(in oklab, white 86%, var(--accent) 14%);
+}
+
+.bullet-card-alert {
+  background: color-mix(in oklab, white 86%, var(--alert) 14%);
+}
+
+.bullet-index,
+.sprint-index {
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  font-family: "Sora", "Avenir Next", sans-serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  background: rgba(18, 32, 42, 0.1);
+}
+
+.strength-grid,
+.improvement-grid,
+.snapshot-grid {
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.strength-card,
+.snapshot-card {
+  padding: 18px;
+}
+
+.strength-card {
+  display: grid;
+  gap: 12px;
+}
+
+.strength-mark {
+  display: inline-grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  background: rgba(31, 100, 81, 0.12);
+  color: var(--success);
+  font-weight: 700;
+}
+
+.improvement-card {
+  padding: 18px;
+  display: grid;
+  gap: 12px;
+}
+
+.improvement-card header,
+.priority-card header {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: start;
+}
+
+.improvement-card strong,
+.priority-card strong,
+.snapshot-card strong {
+  font-family: "Sora", "Avenir Next", sans-serif;
+  letter-spacing: -0.02em;
+}
+
+.sprint-grid {
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.sprint-card {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 14px;
+  padding: 18px;
+  align-items: start;
+}
+
+.priority-stack {
+  display: grid;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.priority-card {
+  padding: 18px;
+  display: grid;
+  gap: 10px;
+}
+
+.priority-card header span,
+.priority-lift,
+.snapshot-card span {
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
+.download-card {
+  background: linear-gradient(180deg, #fffaf4, #f8f1e7);
+}
+
+.download-actions {
+  display: grid;
+  gap: 10px;
+  margin: 18px 0;
+}
+
+.button-block {
+  width: 100%;
+}
+
+.agent-brief-box {
+  display: grid;
+  gap: 10px;
+  padding: 16px;
+  border-radius: 20px;
+  background: rgba(18, 32, 42, 0.05);
+}
+
+.agent-brief-box span {
+  color: var(--muted);
+  font-size: 0.76rem;
+}
+
+.agent-brief-box p {
+  color: var(--ink);
+}
+
+.usage-steps {
+  display: grid;
+  gap: 12px;
+}
+
+.usage-steps div {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 12px;
+  align-items: start;
+}
+
+.usage-steps span {
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  background: rgba(18, 32, 42, 0.08);
+  color: var(--ink);
+  font-size: 0.74rem;
+}
+
+.usage-steps p {
+  margin: 0;
+}
+
+@media (max-width: 1120px) {
+  .client-hero,
+  .dashboard-layout,
+  .dual-panel-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-rail {
+    position: static;
+  }
+}
+
+@media (max-width: 720px) {
+  .client-hero,
+  .report-section,
+  .download-card {
+    padding: 22px;
+    border-radius: 24px;
+  }
+
+  .stat-ribbon,
+  .strength-grid,
+  .improvement-grid,
+  .sprint-grid,
+  .snapshot-grid,
+  .category-list {
+    grid-template-columns: 1fr;
+  }
+
+  .client-hero .report-headline {
+    font-size: clamp(2.4rem, 14vw, 4rem);
+  }
+
+  .score-projection {
+    grid-template-columns: 1fr;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

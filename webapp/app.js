@@ -181,8 +181,8 @@ function shell(content, nav = "") {
         <a class="brand" href="/">
           <div class="brand-mark">CS</div>
           <div class="brand-copy">
-            <strong>Claude SEO Reports</strong>
-            <span>Hosted SEO audits, made easy to revisit</span>
+            <strong>My SEO Audit</strong>
+            <span>Client-ready SEO reports for real follow-through</span>
           </div>
         </a>
         <nav>
@@ -197,13 +197,13 @@ function shell(content, nav = "") {
 function homePage() {
   app.innerHTML = shell(`
     <section class="hero fade-rise">
-      <div class="fade-rise stagger-1">
-        <div class="eyebrow">Hosted delivery for SEO audits</div>
-        <h1>An SEO audit<br><span class="serif">you can actually keep.</span></h1>
-        <p class="lede">
-          Run an audit once, then hand over a clean report link with scorecards, search visibility,
-          indexation health, and a clear action plan. It feels more like a product than a transcript.
-        </p>
+        <div class="fade-rise stagger-1">
+          <div class="eyebrow">Hosted delivery for SEO audits</div>
+          <h1>An SEO audit<br><span class="serif">clients can actually use.</span></h1>
+          <p class="lede">
+            Run the audit once, then hand over a clean link with a leadership summary, quick wins,
+            blockers, and an implementation brief your team or agent can act on.
+          </p>
         <div class="hero-actions">
           <button class="button button-primary" id="launch-demo">Launch Demo Report</button>
           <a class="button button-secondary" href="#how-it-works">See the flow</a>
@@ -298,231 +298,238 @@ function claimPage() {
     });
 }
 
-function renderMetricTile(label, value) {
+function escapeRegex(value) {
+  return String(value).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function slugify(value) {
+  return String(value || "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "") || "section";
+}
+
+function stripMarkdownInline(value) {
+  return String(value ?? "")
+    .replace(/!\[[^\]]*]\([^)]+\)/g, "")
+    .replace(/\[([^\]]+)]\([^)]+\)/g, "$1")
+    .replace(/`([^`]+)`/g, "$1")
+    .replace(/\*\*([^*]+)\*\*/g, "$1")
+    .replace(/\*([^*]+)\*/g, "$1")
+    .replace(/~~([^~]+)~~/g, "$1")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function getField(markdown, label) {
+  const regex = new RegExp(`\\*\\*${escapeRegex(label)}:\\*\\*\\s*(.+)`, "i");
+  return markdown.match(regex)?.[1]?.trim() || "";
+}
+
+function parseListItems(content) {
+  return String(content || "")
+    .split("\n")
+    .map((line) => line.trim())
+    .map((line) => line.match(/^(?:[-*]|\d+\.|- \[[ xX]\])\s+(.*)$/)?.[1] || "")
+    .filter(Boolean)
+    .map(stripMarkdownInline);
+}
+
+function parseMarkdownTable(content) {
+  const rows = String(content || "")
+    .split("\n")
+    .map((line) => line.trim())
+    .filter((line) => line.startsWith("|") && line.endsWith("|"))
+    .map((line) => line.split("|").slice(1, -1).map((cell) => cell.trim()));
+
+  return rows.filter((row) => !row.every((cell) => /^:?-{3,}:?$/.test(cell)));
+}
+
+function findHeading(headings, matcher) {
+  return headings.find((heading) => matcher.test(heading.title));
+}
+
+function parseCategoryScores(markdown) {
+  const regex = /^##\s+\d+\.\s+(.+?)\s+—\s+Score:\s+(\d+)\/100\s+\(Weight:\s+(\d+)%\)/gm;
+  const categories = [];
+  let match;
+
+  while ((match = regex.exec(String(markdown || "")))) {
+    const score = Number(match[2]);
+    const weight = Number(match[3]);
+    categories.push({
+      name: stripMarkdownInline(match[1]),
+      score,
+      weight,
+      weighted: Number(((score * weight) / 100).toFixed(1)),
+    });
+  }
+
+  return categories;
+}
+
+function normalizePriority(title) {
+  const value = String(title || "").toLowerCase();
+  if (value.includes("critical")) return "critical";
+  if (value.includes("high")) return "high";
+  if (value.includes("medium")) return "medium";
+  if (value.includes("low")) return "low";
+  return "medium";
+}
+
+function parseActionItems(headings) {
+  const grouped = {
+    critical: [],
+    high: [],
+    medium: [],
+    low: [],
+  };
+  let currentPriority = null;
+
+  headings.forEach((heading) => {
+    if (heading.level === 2) {
+      currentPriority = normalizePriority(heading.title);
+      return;
+    }
+
+    if (heading.level !== 3 || !currentPriority) {
+      return;
+    }
+
+    const effort = heading.content.match(/\*\*Effort:\*\*\s*(.+)/i)?.[1]?.trim() || "";
+    const expectedLift = heading.content.match(/\*\*Expected lift:\*\*\s*(.+)/i)?.[1]?.trim() || "";
+    const actionMatch = heading.content.match(/\*\*Action:\*\*\s*([\s\S]*?)(?=\n\*\*|$)/i);
+    const action = actionMatch ? stripMarkdownInline(actionMatch[1]) : "";
+
+    grouped[currentPriority].push({
+      title: stripMarkdownInline(heading.title.replace(/^\d+\.\s*/, "")),
+      effort,
+      expectedLift,
+      action,
+      priority: currentPriority,
+    });
+  });
+
+  return grouped;
+}
+
+function scoreStatus(score) {
+  const numeric = Number(score || 0);
+  if (numeric >= 85) return "performing strongly";
+  if (numeric >= 70) return "competitive with room to grow";
+  if (numeric >= 55) return "fixable with a focused sprint";
+  return "holding back visibility";
+}
+
+function insightForCategory(name) {
+  const label = String(name || "");
+  if (label.includes("AI Search")) return "Clarify AI crawler access, add llms.txt, and make brand authority easier for models to interpret.";
+  if (label.includes("Images")) return "Add social preview images and fix recurring alt text gaps so the site earns more click-through value.";
+  if (label.includes("Technical")) return "Tighten crawl plumbing first: sitemap coverage, redirect behavior, canonicals, and security headers.";
+  if (label.includes("Schema")) return "Broaden structured data coverage and make article markup consistent so search engines can trust the content model.";
+  if (label.includes("Content")) return "Protect the strong research work by expanding thin pages and reinforcing trust signals around authorship and policy.";
+  if (label.includes("On-Page")) return "Sharpen titles, internal linking, and page depth so the strongest content gets discovered and clicked.";
+  if (label.includes("Performance")) return "Performance is already a standout, so keep it stable while fixing the lower-scoring categories.";
+  return "This area is worth attention in the next optimization cycle.";
+}
+
+function buildReportInsights(report) {
+  const auditSection = report.sections?.audit_report || {};
+  const actionSection = report.sections?.action_plan || {};
+  const auditMarkdown = auditSection.markdown || "";
+  const actionMarkdown = actionSection.markdown || "";
+  const auditHeadings = getHeadings(auditSection);
+  const actionHeadings = getHeadings(actionSection);
+  const categoryScores = parseCategoryScores(auditMarkdown);
+  const sortedByScore = [...categoryScores].sort((a, b) => b.score - a.score);
+  const weakest = [...categoryScores].sort((a, b) => a.score - b.score);
+  const actionItems = parseActionItems(actionHeadings);
+  const weekOneHeading = findHeading(actionHeadings, /^Week 1/i);
+  const projectedOverall = actionMarkdown.match(/\|\s*\*\*Overall\*\*\s*\|\s*\*\*(\d+)\*\*\s*\|\s*\*\*(\d+)\*\*\s*\|\s*\*\*(\d+)\*\*/i);
+  const labMetricsHeading = findHeading(auditHeadings, /^Lab Metrics$/i);
+  const lighthouseHeading = findHeading(auditHeadings, /^Lighthouse Scores$/i);
+
+  const labMetrics = parseMarkdownTable(labMetricsHeading?.content || "")
+    .slice(1)
+    .map((row) => ({
+      name: stripMarkdownInline(row[0]),
+      value: stripMarkdownInline(row[1]),
+      rating: stripMarkdownInline(row[3] || ""),
+    }))
+    .slice(0, 4);
+
+  const lighthouseScores = parseMarkdownTable(lighthouseHeading?.content || "")
+    .slice(1)
+    .map((row) => ({
+      name: stripMarkdownInline(row[0]),
+      value: stripMarkdownInline(row[1]),
+    }))
+    .slice(0, 4);
+
+  return {
+    facts: {
+      date: getField(auditMarkdown, "Date") || formatDateTime(report.generated_at),
+      businessType: getField(auditMarkdown, "Business Type Detected") || "SEO audit report",
+      pagesCrawled: getField(auditMarkdown, "Pages Crawled") || "Unknown",
+      overallScore: report.overview?.health_score ?? (Number(getField(auditMarkdown, "Overall SEO Health Score").match(/\d+/)?.[0]) || null),
+    },
+    executiveSummary: stripMarkdownInline(findHeading(auditHeadings, /^Executive Summary$/i)?.content || ""),
+    criticalIssues: parseListItems(findHeading(auditHeadings, /^Top 5 Critical Issues$/i)?.content || ""),
+    quickWins: parseListItems(findHeading(auditHeadings, /^Top 5 Quick Wins$/i)?.content || ""),
+    whatsWorking: parseListItems(findHeading(auditHeadings, /^What's Working Well$/i)?.content || ""),
+    categoryScores,
+    strongestCategories: sortedByScore.slice(0, 2),
+    weakestCategories: weakest.slice(0, 3),
+    actionItems,
+    weekOneActions: parseListItems(weekOneHeading?.content || ""),
+    projectedOverall: projectedOverall
+      ? {
+          current: Number(projectedOverall[1]),
+          afterSprint: Number(projectedOverall[2]),
+          afterFull: Number(projectedOverall[3]),
+        }
+      : null,
+    labMetrics,
+    lighthouseScores,
+    auditMarkdown,
+    actionMarkdown,
+  };
+}
+
+function renderStatChip(label, value, tone = "default") {
   return `
-    <div class="metric-tile">
+    <article class="stat-chip stat-chip-${tone}">
       <span>${escapeHtml(label)}</span>
       <strong>${escapeHtml(value)}</strong>
-    </div>
+    </article>
   `;
 }
 
-function renderHighlights(items) {
-  if (!items.length) {
-    return `<div class="issue-card"><strong>Nothing urgent surfaced.</strong><p>No items have been promoted into this highlight group yet.</p></div>`;
-  }
-
-  return items
-    .map(
-      (item) => `
-        <article class="issue-card">
-          <header>
-            <strong>${escapeHtml(item.title || "Untitled insight")}</strong>
-            <span class="pill ${severityClass(item.severity)}">${escapeHtml(item.severity || "medium")}</span>
-          </header>
-          <p>${escapeHtml(item.detail || "No detail provided.")}</p>
-          <div class="mini-meta">
-            <span>Source: ${escapeHtml(item.source || "unknown")}</span>
-            ${item.effort ? `<span>Effort: ${escapeHtml(item.effort)}</span>` : ""}
-          </div>
-        </article>
-      `
-    )
-    .join("");
-}
-
-function renderPerformanceSection(section) {
-  if (!section.available) {
-    return `<div class="empty-state"><strong>No structured performance data yet.</strong><p>Run the Google-report data flow or connect PageSpeed + CrUX sources.</p></div>`;
-  }
-
-  const scores = section.lighthouse_scores || {};
-  const metrics = Object.entries(section.core_web_vitals || {});
-
-  return `
-    <div class="performance-grid">
-      <div class="lighthouse-list">
-        ${Object.entries(scores)
-          .map(
-            ([label, score]) => `
-              <div class="lighthouse-item">
-                <div>
-                  <strong>${escapeHtml(label.replace("-", " "))}</strong>
-                  <p class="section-copy">Normalized directly from the structured Google report output.</p>
-                </div>
-                <span class="score-chip ${scoreClass(score)}">${escapeHtml(formatNumber(score))}/100</span>
-              </div>
-            `
-          )
-          .join("")}
-      </div>
-      <div class="cwv-list">
-        ${metrics
-          .map(([key, metric]) => {
-            const distribution = metric.distribution || {};
-            const good = Number(distribution.good || 0);
-            const ni = Number(distribution.needs_improvement || 0);
-            const poor = Number(distribution.poor || 0);
-            const total = Math.max(good + ni + poor, 1);
-            return `
-              <div class="cwv-item">
-                <div class="cwv-topline">
-                  <div>
-                    <strong>${escapeHtml(metric.label || key)}</strong>
-                    <span>${escapeHtml(metric.rating || "Unrated")}</span>
-                  </div>
-                  <div><strong>${escapeHtml(formatMetricValue(metric))}</strong></div>
-                </div>
-                <div class="stacked-bar">
-                  <span style="width:${(good / total) * 100}%"></span>
-                  <span style="width:${(ni / total) * 100}%"></span>
-                  <span style="width:${(poor / total) * 100}%"></span>
-                </div>
-                <div class="mini-meta">
-                  <span>Good ${formatPercent(good / total)}</span>
-                  <span>NI ${formatPercent(ni / total)}</span>
-                  <span>Poor ${formatPercent(poor / total)}</span>
-                </div>
-              </div>
-            `;
-          })
-          .join("")}
-      </div>
-    </div>
-  `;
-}
-
-function renderSearchConsole(section) {
-  if (!section.available) {
-    return `<div class="empty-state"><strong>No Search Console section yet.</strong><p>This area lights up once GSC totals, rows, or quick-win queries are available.</p></div>`;
-  }
-
-  const queries = Array.isArray(section.top_queries) ? section.top_queries.slice(0, 8) : [];
-  const maxImpressions = Math.max(...queries.map((entry) => Number(entry.impressions || 0)), 1);
-
-  return `
-    <div class="query-layout">
-      <div class="query-chart">
-        ${queries
-          .map(
-            (entry) => `
-              <div class="query-row">
-                <div class="query-meta">
-                  <strong>${escapeHtml(getQueryLabel(entry))}</strong>
-                  <span>${escapeHtml(formatNumber(entry.impressions || 0))} impressions</span>
-                </div>
-                <div class="query-bar">
-                  <span style="width:${(Number(entry.impressions || 0) / maxImpressions) * 100}%"></span>
-                </div>
-              </div>
-            `
-          )
-          .join("")}
-      </div>
-      <div class="query-table">
-        <h3>Quick wins</h3>
-        <table>
-          <thead>
-            <tr>
-              <th>Query</th>
-              <th>Pos.</th>
-              <th>Impr.</th>
-              <th>Clicks</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${(section.quick_wins || [])
-              .slice(0, 8)
-              .map(
-                (entry) => `
-                  <tr>
-                    <td>${escapeHtml(getQueryLabel(entry))}</td>
-                    <td>${escapeHtml(formatNumber(entry.position))}</td>
-                    <td>${escapeHtml(formatNumber(entry.impressions || 0))}</td>
-                    <td>${escapeHtml(formatNumber(entry.clicks || 0))}</td>
-                  </tr>
-                `
-              )
-              .join("")}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  `;
-}
-
-function renderIndexation(section) {
-  if (!section.available) {
-    return `<div class="empty-state"><strong>No URL inspection data yet.</strong><p>Once inspection results exist, this view will render indexation coverage and per-URL visibility.</p></div>`;
-  }
-
-  const summary = section.summary || {};
-  const total = Number(section.total || 0);
-  const indexed = Number(summary.pass || 0);
-  const failed = Number(summary.fail || 0);
-  const neutral = Number(summary.neutral || 0);
-  const errors = Number(summary.error || 0);
-  const percent = total ? ((indexed / total) * 100).toFixed(1) : "0.0";
-
-  return `
-    <div class="index-layout">
-      <div class="donut-card">
-        <div class="donut" style="--donut-indexed:${total ? (indexed / total) * 100 : 0}; --donut-fail:${total ? (failed / total) * 100 : 0}; --donut-neutral:${total ? (neutral / total) * 100 : 0};">
-          <div class="donut-copy">
-            <strong>${escapeHtml(percent)}%</strong>
-            <span>Index rate</span>
-          </div>
-        </div>
-        <div class="legend">
-          <span class="legend-item"><span class="legend-dot" style="background:var(--success)"></span>Indexed ${escapeHtml(formatNumber(indexed))}</span>
-          <span class="legend-item"><span class="legend-dot" style="background:var(--alert)"></span>Not indexed ${escapeHtml(formatNumber(failed))}</span>
-          <span class="legend-item"><span class="legend-dot" style="background:rgba(21, 36, 45, 0.22)"></span>Neutral ${escapeHtml(formatNumber(neutral + errors))}</span>
-        </div>
-      </div>
-      <div class="query-table">
-        <h3>Sample inspected URLs</h3>
-        <table>
-          <thead>
-            <tr>
-              <th>URL</th>
-              <th>Verdict</th>
-              <th>Coverage</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${(section.results || [])
-              .slice(0, 8)
-              .map(
-                (entry) => `
-                  <tr>
-                    <td>${escapeHtml(entry.url || "Unknown URL")}</td>
-                    <td>${escapeHtml(entry.verdict || "Unknown")}</td>
-                    <td>${escapeHtml(entry.coverage_state || "—")}</td>
-                  </tr>
-                `
-              )
-              .join("")}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  `;
-}
-
-function renderMarkdownSection(section, fallbackLabel) {
-  const headings = getHeadings(section);
-  if (!section?.available || !headings.length) {
-    return `<div class="empty-state"><strong>${escapeHtml(fallbackLabel)}</strong><p>The hosted payload does not include this section yet.</p></div>`;
+function renderCategoryBreakdown(categories) {
+  if (!categories.length) {
+    return `<div class="empty-state"><strong>No score breakdown yet.</strong><p>The hosted payload needs category-level audit scores to render this section.</p></div>`;
   }
 
   return `
-    <div class="markdown-grid">
-      ${headings
+    <div class="category-list">
+      ${categories
         .map(
-          (heading) => `
-            <article class="report-block" id="${escapeHtml(heading.title.toLowerCase().replace(/[^a-z0-9]+/g, "-"))}">
-              <h3>${escapeHtml(heading.title)}</h3>
-              ${renderHeadingContent(heading.content)}
+          (category) => `
+            <article class="category-card">
+              <div class="category-head">
+                <div>
+                  <h3>${escapeHtml(category.name)}</h3>
+                  <p>Weight ${escapeHtml(`${category.weight}%`)}</p>
+                </div>
+                <div class="category-score ${scoreClass(category.score)}">${escapeHtml(formatNumber(category.score))}</div>
+              </div>
+              <div class="category-track">
+                <span style="width:${Math.max(6, Number(category.score || 0))}%"></span>
+              </div>
+              <div class="category-foot">
+                <span>${escapeHtml(scoreStatus(category.score))}</span>
+                <strong>Weighted ${escapeHtml(formatNumber(category.weighted))}</strong>
+              </div>
             </article>
           `
         )
@@ -531,171 +538,377 @@ function renderMarkdownSection(section, fallbackLabel) {
   `;
 }
 
+function renderBulletCards(items, tone) {
+  if (!items.length) {
+    return `<div class="empty-state"><strong>Nothing to show yet.</strong><p>This section will light up as soon as the report includes these items.</p></div>`;
+  }
+
+  return `
+    <div class="bullet-card-grid">
+      ${items
+        .map(
+          (item, index) => `
+            <article class="bullet-card bullet-card-${tone}">
+              <div class="bullet-index">${index + 1}</div>
+              <p>${escapeHtml(item)}</p>
+            </article>
+          `
+        )
+        .join("")}
+    </div>
+  `;
+}
+
+function renderStrengthCards(items) {
+  if (!items.length) {
+    return `<div class="empty-state"><strong>No strengths were parsed yet.</strong><p>Once the audit includes a success summary, this section will surface it here.</p></div>`;
+  }
+
+  return `
+    <div class="strength-grid">
+      ${items
+        .map(
+          (item) => `
+            <article class="strength-card">
+              <span class="strength-mark">+</span>
+              <p>${escapeHtml(item)}</p>
+            </article>
+          `
+        )
+        .join("")}
+    </div>
+  `;
+}
+
+function renderImprovementCards(categories) {
+  if (!categories.length) {
+    return `<div class="empty-state"><strong>No improvement map yet.</strong><p>The report needs category scores before this section can prioritize the weak spots.</p></div>`;
+  }
+
+  return `
+    <div class="improvement-grid">
+      ${categories
+        .map(
+          (category) => `
+            <article class="improvement-card">
+              <header>
+                <strong>${escapeHtml(category.name)}</strong>
+                <span class="pill ${severityClass(category.score < 55 ? "critical" : category.score < 70 ? "high" : "medium")}">${escapeHtml(`${category.score}/100`)}</span>
+              </header>
+              <p>${escapeHtml(insightForCategory(category.name))}</p>
+            </article>
+          `
+        )
+        .join("")}
+    </div>
+  `;
+}
+
+function renderSprintCards(items) {
+  if (!items.length) {
+    return `<div class="empty-state"><strong>No week-one plan yet.</strong><p>The action plan should include a first sprint or critical task list for this section.</p></div>`;
+  }
+
+  return `
+    <div class="sprint-grid">
+      ${items
+        .map(
+          (item, index) => `
+            <article class="sprint-card">
+              <div class="sprint-index">${index + 1}</div>
+              <p>${escapeHtml(item)}</p>
+            </article>
+          `
+        )
+        .join("")}
+    </div>
+  `;
+}
+
+function renderPriorityCards(items) {
+  if (!items.length) {
+    return "";
+  }
+
+  return `
+    <div class="priority-stack">
+      ${items
+        .map(
+          (item) => `
+            <article class="priority-card">
+              <header>
+                <strong>${escapeHtml(item.title)}</strong>
+                ${item.effort ? `<span>${escapeHtml(item.effort)}</span>` : ""}
+              </header>
+              <p>${escapeHtml(item.action || item.expectedLift || "Recommended next step from the action plan.")}</p>
+              ${item.expectedLift ? `<div class="priority-lift">${escapeHtml(item.expectedLift)}</div>` : ""}
+            </article>
+          `
+        )
+        .join("")}
+    </div>
+  `;
+}
+
+function renderMetricSnapshot(labMetrics, lighthouseScores) {
+  const metrics = [...labMetrics.map((item) => ({ label: item.name, value: item.value })), ...lighthouseScores.map((item) => ({ label: item.name, value: item.value }))].slice(0, 6);
+
+  if (!metrics.length) {
+    return `<div class="empty-state"><strong>No standout metrics yet.</strong><p>Structured or parsed performance metrics will appear here when available.</p></div>`;
+  }
+
+  return `
+    <div class="snapshot-grid">
+      ${metrics
+        .map(
+          (metric) => `
+            <article class="snapshot-card">
+              <span>${escapeHtml(metric.label)}</span>
+              <strong>${escapeHtml(metric.value)}</strong>
+            </article>
+          `
+        )
+        .join("")}
+    </div>
+  `;
+}
+
+function downloadTextFile(filename, content) {
+  const blob = new Blob([content], { type: "text/markdown;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = filename;
+  document.body.append(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
+}
+
+function buildAgentPrompt(report, insights) {
+  const domain = report.target?.domain || "this site";
+  return [
+    `Review the attached FULL-AUDIT-REPORT.md and ACTION-PLAN.md for ${domain}.`,
+    "Start with the Critical and Week 1 items first.",
+    "Implement the highest-leverage fixes in PR-sized batches, preserving existing behavior where possible.",
+    "Call out any risky tradeoffs before making changes, and summarize the expected SEO impact of each batch.",
+  ].join(" ");
+}
+
+function attachReportActions(report, insights) {
+  const domain = (report.target?.domain || "seo-audit").replace(/[^a-z0-9.-]+/gi, "-");
+  const auditButton = document.querySelector("#download-full-audit");
+  const planButton = document.querySelector("#download-action-plan");
+  const promptButton = document.querySelector("#copy-agent-brief");
+  const promptOutput = document.querySelector("#agent-brief-text");
+
+  if (auditButton && insights.auditMarkdown) {
+    auditButton.addEventListener("click", () => {
+      downloadTextFile(`${domain}-FULL-AUDIT-REPORT.md`, insights.auditMarkdown);
+    });
+  }
+
+  if (planButton && insights.actionMarkdown) {
+    planButton.addEventListener("click", () => {
+      downloadTextFile(`${domain}-ACTION-PLAN.md`, insights.actionMarkdown);
+    });
+  }
+
+  if (promptOutput) {
+    promptOutput.textContent = buildAgentPrompt(report, insights);
+  }
+
+  if (promptButton) {
+    promptButton.addEventListener("click", async () => {
+      const prompt = buildAgentPrompt(report, insights);
+      try {
+        await navigator.clipboard.writeText(prompt);
+        promptButton.textContent = "Copied";
+        window.setTimeout(() => {
+          promptButton.textContent = "Copy Agent Brief";
+        }, 1600);
+      } catch {
+        promptButton.textContent = "Copy failed";
+      }
+    });
+  }
+}
+
 function reportPage(report) {
-  const overview = report.overview || {};
-  const healthScore = overview.health_score;
-  const ringColor = scoreTone(healthScore);
-  const nav = `<a href="/">Home</a>`;
-  const outline = [
-    "Overview",
-    "Highlights",
-    "Performance",
-    "Search Console",
-    "Indexation",
-    "Audit Notes",
-    "Action Plan",
-  ];
+  const insights = buildReportInsights(report);
+  const score = insights.facts.overallScore;
+  const nav = `<a href="/">Home</a><a href="#agent-brief">Agent Brief</a>`;
+  const strongest = insights.strongestCategories[0];
+  const weakest = insights.weakestCategories[0];
+  const sprintScore = insights.projectedOverall?.afterSprint;
+  const fullScore = insights.projectedOverall?.afterFull;
 
   app.innerHTML = shell(`
-    <section class="hero fade-rise">
-      <div class="fade-rise stagger-1">
-        <div class="eyebrow">Hosted audit report</div>
-        <div class="report-headline">${escapeHtml(report.target?.domain || "Unknown domain")}<br><span class="serif">under the microscope.</span></div>
+    <section class="client-hero fade-rise">
+      <div class="client-hero-copy fade-rise stagger-1">
+        <div class="eyebrow">Agency client report</div>
+        <div class="report-headline">${escapeHtml(report.target?.domain || "Unknown domain")}<br><span class="serif">SEO dashboard.</span></div>
         <p class="report-subhead">
-          Generated ${escapeHtml(formatDateTime(report.generated_at))}. This view combines structured Google metrics,
-          indexation signals, and preserved strategic notes into one report that is easier to share, review, and revisit.
+          ${escapeHtml(insights.executiveSummary || "A high-level dashboard view of the audit, shaped for fast client readouts and clear implementation follow-through.")}
         </p>
+        <div class="hero-actions">
+          <a class="button button-primary" href="#first-sprint">See First Sprint</a>
+          <a class="button button-secondary" href="#agent-brief">Download Briefs</a>
+        </div>
       </div>
-      <aside class="hero-note fade-rise stagger-2">
-        <h2>Report snapshot</h2>
-        <p>
-          A clearer way to walk someone through what matters, what is fixable, and what to do next.
-        </p>
-        <div class="roadmap-list">
-          <div class="roadmap-item"><strong>Report ID</strong><p class="section-copy">${escapeHtml(report.report_id || "Unknown")}</p></div>
-          <div class="roadmap-item"><strong>Included</strong><p class="section-copy">${escapeHtml((report.source?.artifacts_present || []).join(", ") || "Unknown")}</p></div>
+      <aside class="client-scorecard fade-rise stagger-2">
+        <div class="score-badge-wrap">
+          <div class="score-badge">
+            <span>SEO health</span>
+            <strong>${escapeHtml(formatNumber(score))}</strong>
+            <small>${escapeHtml(scoreStatus(score))}</small>
+          </div>
+          <div class="score-projection">
+            ${sprintScore ? `<div><span>After first sprint</span><strong>${escapeHtml(`${sprintScore}/100`)}</strong></div>` : ""}
+            ${fullScore ? `<div><span>After full plan</span><strong>${escapeHtml(`${fullScore}/100`)}</strong></div>` : ""}
+          </div>
+        </div>
+        <div class="hero-facts">
+          <div><span>Business type</span><strong>${escapeHtml(insights.facts.businessType)}</strong></div>
+          <div><span>Pages crawled</span><strong>${escapeHtml(insights.facts.pagesCrawled)}</strong></div>
+          <div><span>Generated</span><strong>${escapeHtml(insights.facts.date)}</strong></div>
         </div>
       </aside>
     </section>
 
-    <div class="page-grid">
-      <main class="content-stack">
-        <section class="section-panel fade-rise stagger-1" id="overview">
+    <div class="dashboard-layout">
+      <main class="dashboard-main">
+        <section class="section-panel report-section fade-rise stagger-1" id="quick-readout">
           <div class="section-heading">
             <div>
-              <h2>Overview</h2>
-              <p>The first screen gives the user the shape of the audit before they dive into the detail.</p>
+              <h2>Quick readout</h2>
+              <p>The top-line story you can walk a client through in under two minutes.</p>
             </div>
           </div>
-          <div class="score-stage">
-            <div class="score-ring" style="--score:${Number(healthScore || 0)}; --ring-color:${ringColor}">
-              <div class="score-copy">
-                <small>SEO health</small>
-                <div class="score-number">${escapeHtml(formatNumber(healthScore))}</div>
-                <p>${healthScore === null || healthScore === undefined ? "Waiting on a scored audit." : "A quick read on overall search health."}</p>
-              </div>
+          <div class="stat-ribbon">
+            ${renderStatChip("Top strength", strongest ? `${strongest.name} ${strongest.score}` : "—", "good")}
+            ${renderStatChip("Biggest blocker", weakest ? `${weakest.name} ${weakest.score}` : "—", "warn")}
+            ${renderStatChip("Critical issues", String(insights.criticalIssues.length || report.overview?.critical_issue_count || 0), "alert")}
+            ${renderStatChip("Quick wins", String(insights.quickWins.length || report.overview?.quick_win_count || 0), "default")}
+          </div>
+        </section>
+
+        <section class="section-panel report-section fade-rise stagger-1" id="score-breakdown">
+          <div class="section-heading">
+            <div>
+              <h2>Score breakdown</h2>
+              <p>Category scores make it obvious where the site is already strong and where the next gains should come from.</p>
             </div>
-            <div class="metrics-grid">
-              ${renderMetricTile("Performance", overview.lighthouse_performance_score ? `${formatNumber(overview.lighthouse_performance_score)}/100` : "—")}
-              ${renderMetricTile("SEO", overview.lighthouse_seo_score ? `${formatNumber(overview.lighthouse_seo_score)}/100` : "—")}
-              ${renderMetricTile("Clicks", formatNumber(overview.total_clicks))}
-              ${renderMetricTile("Impressions", formatNumber(overview.total_impressions))}
-              ${renderMetricTile("Indexed URLs", formatNumber(overview.indexed_urls))}
-              ${renderMetricTile("Quick wins", formatNumber(overview.quick_win_count))}
+          </div>
+          ${renderCategoryBreakdown(insights.categoryScores)}
+        </section>
+
+        <section class="section-panel report-section fade-rise stagger-2" id="quick-wins">
+          <div class="section-heading">
+            <div>
+              <h2>Quick wins and strengths</h2>
+              <p>Separate what is already working from what can be tightened quickly so the conversation stays constructive.</p>
+            </div>
+          </div>
+          <div class="dual-panel-grid">
+            <div>
+              <div class="mini-section-kicker">What is already working</div>
+              ${renderStrengthCards(insights.whatsWorking.slice(0, 6))}
+            </div>
+            <div>
+              <div class="mini-section-kicker">Fast wins</div>
+              ${renderBulletCards(insights.quickWins.slice(0, 5), "warm")}
             </div>
           </div>
         </section>
 
-        <section class="section-panel fade-rise stagger-1" id="highlights">
+        <section class="section-panel report-section fade-rise stagger-2" id="challenges">
           <div class="section-heading">
             <div>
-              <h2>Highlights</h2>
-              <p>The biggest problems and easiest wins stay visible instead of getting buried in a long audit export.</p>
+              <h2>Challenges and where to improve</h2>
+              <p>The main blockers and the weakest score areas sit side by side so the fixes feel connected to the outcome.</p>
             </div>
           </div>
-          <div class="split-grid">
+          <div class="dual-panel-grid">
             <div>
-              <div class="eyebrow">Critical issues</div>
-              <div class="markdown-grid">${renderHighlights(report.highlights?.critical_issues || [])}</div>
+              <div class="mini-section-kicker">Top challenges</div>
+              ${renderBulletCards(insights.criticalIssues.slice(0, 5), "alert")}
             </div>
             <div>
-              <div class="eyebrow">Quick wins</div>
-              <div class="markdown-grid">${renderHighlights(report.highlights?.quick_wins || [])}</div>
+              <div class="mini-section-kicker">Improvement map</div>
+              ${renderImprovementCards(insights.weakestCategories)}
             </div>
           </div>
         </section>
 
-        <section class="section-panel fade-rise stagger-2" id="performance">
+        <section class="section-panel report-section fade-rise stagger-3" id="first-sprint">
           <div class="section-heading">
             <div>
-              <h2>Performance</h2>
-              <p>Speed and quality metrics are grouped here so the story is easy to scan.</p>
+              <h2>First sprint</h2>
+              <p>The first week should feel concrete. This turns the action plan into the next set of moves, not a wall of recommendations.</p>
             </div>
           </div>
-          ${renderPerformanceSection(report.sections?.performance || { available: false })}
+          ${renderSprintCards(insights.weekOneActions.length ? insights.weekOneActions : insights.actionItems.critical.slice(0, 5).map((item) => item.title))}
+          ${renderPriorityCards(insights.actionItems.critical.slice(0, 3))}
         </section>
 
-        <section class="section-panel fade-rise stagger-2" id="search-console">
+        <section class="section-panel report-section fade-rise stagger-3" id="standout-metrics">
           <div class="section-heading">
             <div>
-              <h2>Search Console</h2>
-              <p>Query demand and page-one opportunities are surfaced visually for fast decision-making.</p>
+              <h2>Standout metrics</h2>
+              <p>This keeps the memorable proof points visible when the site has a few standout numbers worth repeating in a client call.</p>
             </div>
           </div>
-          ${renderSearchConsole(report.sections?.search_console || { available: false })}
-        </section>
-
-        <section class="section-panel fade-rise stagger-3" id="indexation">
-          <div class="section-heading">
-            <div>
-              <h2>Indexation</h2>
-              <p>The user sees how much of the site is being picked up, with example URLs beneath the headline number.</p>
-            </div>
-          </div>
-          ${renderIndexation(report.sections?.indexation || { available: false })}
-        </section>
-
-        <section class="section-panel fade-rise stagger-3" id="audit-notes">
-          <div class="section-heading">
-            <div>
-              <h2>Audit notes</h2>
-              <p>The full audit can still live here for anyone who wants the detailed reasoning behind the summary.</p>
-            </div>
-          </div>
-          ${renderMarkdownSection(report.sections?.audit_report, "No audit markdown found.")}
-        </section>
-
-        <section class="section-panel fade-rise stagger-3" id="action-plan">
-          <div class="section-heading">
-            <div>
-              <h2>Action plan</h2>
-              <p>The priorities stay intact, but the report experience makes the next moves easier to talk through.</p>
-            </div>
-          </div>
-          ${renderMarkdownSection(report.sections?.action_plan, "No action plan found.")}
+          ${renderMetricSnapshot(insights.labMetrics, insights.lighthouseScores)}
         </section>
       </main>
 
-      <aside class="side-rail">
-        <div class="rail-card">
-          <h3>Navigate</h3>
-          <div class="outline-list">
-            ${outline
-              .map((label) => {
-                const href = "#" + label.toLowerCase().replace(/[^a-z0-9]+/g, "-");
-                return `<a class="outline-link" href="${href}">${escapeHtml(label)}</a>`;
-              })
-              .join("")}
+      <aside class="dashboard-rail">
+        <div class="rail-card download-card" id="agent-brief">
+          <h3>Implementation brief</h3>
+          <p>
+            The detailed report stays as markdown on purpose. Download the files below and hand them to an agent or engineer to work through the recommendations.
+          </p>
+          <div class="download-actions">
+            <button class="button button-primary" id="download-full-audit"${insights.auditMarkdown ? "" : " disabled"}>Download Full Report</button>
+            <button class="button button-secondary" id="download-action-plan"${insights.actionMarkdown ? "" : " disabled"}>Download Action Plan</button>
           </div>
+          <div class="agent-brief-box">
+            <span>Suggested prompt</span>
+            <p id="agent-brief-text"></p>
+          </div>
+          <button class="button button-secondary button-block" id="copy-agent-brief">Copy Agent Brief</button>
         </div>
+
         <div class="rail-card">
-          <h3>Session snapshot</h3>
+          <h3>Report snapshot</h3>
           <div class="rail-stat">
-            <span class="section-copy">Generated</span>
-            <strong>${escapeHtml(formatDateTime(report.generated_at))}</strong>
+            <span class="section-copy">Report ID</span>
+            <strong>${escapeHtml(report.report_id || "Unknown")}</strong>
           </div>
           <div class="rail-stat">
-            <span class="section-copy">Report type</span>
-            <strong>${escapeHtml(report.report_type || "unknown")}</strong>
+            <span class="section-copy">Included</span>
+            <strong>${escapeHtml((report.source?.artifacts_present || []).join(", ") || "Unknown")}</strong>
           </div>
           <div class="rail-stat">
             <span class="section-copy">Target</span>
             <strong>${escapeHtml(report.target?.url || report.target?.domain || "unknown")}</strong>
           </div>
         </div>
+
+        <div class="rail-card">
+          <h3>How to use this</h3>
+          <div class="usage-steps">
+            <div><span>1</span><p>Lead with the score and the biggest blockers.</p></div>
+            <div><span>2</span><p>Use the first sprint to agree what gets fixed now.</p></div>
+            <div><span>3</span><p>Download the markdown files and hand them to an agent for implementation.</p></div>
+          </div>
+        </div>
       </aside>
     </div>
   `, nav);
+
+  attachReportActions(report, insights);
 }
 
 function reportErrorPage(message, reportId) {
